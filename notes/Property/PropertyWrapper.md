@@ -2,7 +2,7 @@
 
 Separation of property definition and management. E.g., properties with thread-safety checks or have their underlying data stored in database: need to write management code on every property. With property wrapper, write that code once, apply to multiple properties.
 
-Define wrapper with structure, enumeration, or class with `wrappedValue` property. E.g., `TwelveOrLess` ensures value it wraps always contains number less than or equal to 12:
+Define wrapper as struct, enum, or class with `wrappedValue` property. E.g., `TwelveOrLess` ensures value it wraps always contains number less than or equal to 12:
 
 ```swift
 @propertyWrapper
@@ -151,7 +151,7 @@ print(someStructure.$someNumber) // "true"
 
 Projected value can be of any type, including `self`.
 
-Like other properties, can omit `self.` when accessing projected value from code already part of type:
+Like other properties, can omit `self.` when accessing projected value from code within type:
 
 ```swift
 enum Size {
