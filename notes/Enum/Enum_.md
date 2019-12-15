@@ -1,3 +1,5 @@
+# `enum`
+
 Value type. Like class and named types, can have methods (including computed properties).
 
 ## Raw Value
