@@ -1,4 +1,4 @@
-# CaseIterable
+# `CaseIterable`
 
 Protocol that, when conformed to by type (typically by enum without associated value), automatically implements `allCases` property, which is collection of all of type's values (in order declared).
 
