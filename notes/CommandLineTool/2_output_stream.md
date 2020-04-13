@@ -13,3 +13,20 @@ fputs("\(error)\n", stderr)
 ```
 
 Common practice to print usage statement when user uses command-line program with incorrect args.
+
+## Terminal Text Color
+
+Sequence `\u{001B}[0;31m` are control characters for Terminal to change following text color to red. Use sequence `\u{001B}[;m` to reset text color.
+
+```swift
+func writeMessage(_ message: String, to: OutputType = .standard) {
+    switch to {
+    case .standard:
+        print("\u{001B}[;m\(message)")
+    case .error:
+        fputs("\u{001B}[0;31m\(message)\n", stderr)
+    }
+}
+```
+
+Does not work if running app in Xcode.
