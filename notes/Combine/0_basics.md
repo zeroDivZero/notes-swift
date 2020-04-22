@@ -1,8 +1,6 @@
 # COMBINE BASICS
 
-Framework implementing functional reactive programming (FRP) paradigm. Heavily used by SwiftUI.
-
-## FRP
+## Functional Reactive Programming (FRP)
 
 Data flows from one place to other automatically through subscriptions.
 
@@ -16,7 +14,7 @@ In addition to driving UI updates, also useful in asynchronous programming. E.g.
 
 Publisher object sends values to subscribers over time. Could be single, multiple, or no values. Can only emit single completion or error event. Publisher flow commonly represented by _marble diagram_:
 
-![publisher flow marble diagram](../../assets/combine_publisher.png)
+![publisher flow marble diagram](../../assets/Combine/publisher.png)
 
 Each arrow is publisher. Marble is value emitted. Top arrow has line at end representing completion event. Bottom arrow has cross representing error event. After either event, no more value.
 
@@ -82,7 +80,7 @@ NotificationCenter.default.post(Notification(name: UIApplication.keyboardDidShow
 
 Often don't use values emitted from publisher directly. Publishers can transform stream values with **operators** like `map` and `flatMap` (creates new publisher).
 
-![map publisher flow marble diagram](../../assets/combine_publisher_map.png)
+![map publisher flow marble diagram](../../assets/Combine/publisher_map.png)
 
 New publisher type is `Publishers.Map<Upstream, Output>`. `Upstream` must be another publisher.
 
@@ -103,7 +101,7 @@ let publisher = NotificationCenter.default
 
 Takes values from publisher, collects into array and sends to subscribers when threshold met.
 
-![collect publisher flow marble diagram](../../assets/combine_publisher_collect.png)
+![collect publisher flow marble diagram](../../assets/Combine/publisher_collect.png)
 
 ```swift
 [1, 2, 3]
