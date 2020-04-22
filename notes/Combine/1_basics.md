@@ -78,9 +78,9 @@ subscribe()
 NotificationCenter.default.post(Notification(name: UIApplication.keyboardDidShowNotification))
 ```
 
-## Transforming Publisher
+## Transforming Publisher with Operator
 
-Often don't use values emitted from publisher directly. Publishers can transform stream values with operators like `map` and `flatMap` (creates new publisher).
+Often don't use values emitted from publisher directly. Publishers can transform stream values with **operators** like `map` and `flatMap` (creates new publisher).
 
 ![map publisher flow marble diagram](../../assets/combine_publisher_map.png)
 
