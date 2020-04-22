@@ -49,7 +49,7 @@ Created publisher type is `Publishers.Sequence<[Int], Never>`. `Publishers` is e
 
 Generic types `[Int]` and `Never` mean publisher uses `[Int]` to publish values, and its failure type is `Never`, so it always completes successfully, never reaches `.failure` case in example `switch`.
 
-Every publisher has `Output` and `Failure` type. `Output` is value type publisher pushes to subscribers. In example sequence publisher, `Output` is `Int`, `Failure` is `Never`. Fallible publisher often uses object conforming to `Error` as `Failure` type, but can specify another.
+Every publisher has `Output` and `Failure` associated types. `Output` is value type publisher pushes to subscribers. In example sequence publisher, `Output` is `Int`, `Failure` is `Never`. Fallible publisher often uses object conforming to `Error` as `Failure` type, but can specify another.
 
 Subscribe to publisher with `sink(receiveCompletion:receiveValue:)`. Also special version if publisher cannot fail, only need to supply `receiveValue` closure. **Publisher only publishes values when there is subscriber**. `sink()` creates subscriber immediately and enables publisher to begin streaming values.
 
@@ -117,3 +117,7 @@ Takes values from publisher, collects into array and sends to subscribers when t
 ```
 
 If specified no threshold, new publisher type is `Result<Success, Failure>.Publisher` (`Result<[Output], Never>.Publisher` in this example), returns all values or error. Warning: uses unbounded memory.
+
+## Other Foundation Types
+
+There are other Foundation types that expose their functionality through publishers, such as `Timer` and `URLSession`.
