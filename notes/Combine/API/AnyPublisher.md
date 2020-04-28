@@ -1,4 +1,6 @@
-# `AnyPublisher`
+# `struct AnyPublisher`
+
+`@frozen struct AnyPublisher<Output, Failure> where Failure: Error`
 
 Publisher that performs type erasure by wrapping another publisher. Concrete implementation of `Publisher` that has no significant properties of its own and passes through values and completion event from its upstream publisher.
 
