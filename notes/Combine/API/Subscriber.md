@@ -10,7 +10,7 @@ After subscriber makes initial demand, publisher calls `receive(_:)`, possibly a
 
 ![publisher subscriber flow](../../../assets/Combine/publisher_subscriber_flow.png)
 
-Combine provides following subscribers as operators on `Publisher` type:
+`Publisher` has following operators that return subscribers:
 
 * `sink(receiveCompletion:receiveValue:)` executes closures when it receives completion signal and each time it receives new element.
-* `assign(to:on:)` writes each new value to prop of key path.
+* `assign(to:on:)` writes each new value to property of key path.
