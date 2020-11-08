@@ -6,7 +6,7 @@ In Xcode: **File > Swift Packages > Add Package Dependency**
 
 Enter repo URL. Or with GitHub added to **Accounts**, can type name of package and list of matching repos appears.
 
-Alternatively, navigate to target settings' **Swift Packages** pane to manage adding/removing packages.
+Alternatively, navigate to target settings' **Swift Packages** pane to add/remove packages.
 
 ## Decide Requirements
 
@@ -50,4 +50,4 @@ To find out if dependency is binary or depends on one:
 2. Look for folder called **Referenced Binaries**. If it exists, package distributes binary or has binary dependency.
 3. To further inspect referenced binary, ctrl-click **XCFramework** bundle inside **Referenced Binaries** folder, and open it in **Finder**.
 
-Binary dependency author must create checksum and include it in package manifest. When Xcode resolves or updates dependencies, it doesn't allow binary dependencies to change checksum without also changing version.
+Binary dependency author must create checksum and include it in package manifest. When Xcode resolves or updates dependencies, it doesn't allow binary dependency to change checksum without also changing version.
