@@ -10,6 +10,8 @@ FP applies to lists of elements, FRP applies to streams of elements. FP function
 
 In addition to driving UI updates, also useful in asynchronous programming. E.g., when making network request, get result back eventually. Instead of executing completion closure, request method would return publisher, which publishes result when request done. If result needs to be transformed, or need to chain with another request, easier to read code than nested tree of completion closures.
 
+Combine extends FRP by embedding concept of *back-pressure*: subscriber controls how much info it gets at once to process. Leads to efficient operation, volume of processed stream data is controllable and cancellable.
+
 ## Publisher and Subscriber
 
 Publisher object sends values to subscribers over time. Could be single, multiple, or no values. Can only emit single completion or error event. Publisher flow commonly represented by _marble diagram_:

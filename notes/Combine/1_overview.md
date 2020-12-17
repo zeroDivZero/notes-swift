@@ -13,3 +13,7 @@ Several Foundation types expose functionality through publishers, including `Tim
 Can combine output of multiple publishers and coordinate interaction. E.g., subscribe to updates from text field's publisher, and use text to perform URL requests. Then use another publisher to process responses to update UI.
 
 Adopt Combine to make code easier to read and maintain, by centralizing event-processing code and eliminating techniques like nested closures and convention-based callbacks.
+
+## When to Use
+
+When something needs to react to variety of inputs, such as UI.
