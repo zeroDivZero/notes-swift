@@ -48,3 +48,11 @@ swift run
 Typically need executable name after `run`, but if there is only 1 in this package can be omitted.
 
 Can find binary in `.build` folder (can just run `swift build` to get this file).
+
+## Xcode Project
+
+To create Xcode project for easier development in Xcode:
+
+```zsh
+swift package generate-xcodeproj
+```
