@@ -2,7 +2,7 @@
 
 Concrete implementation of `Subject`.
 
-Unlike `CurrentValueSubject`, `PassthroughSubject` doesn't have initial value or buffer of most recently-published element. `PassthroughSubject` drops values if there are no subscribers, or its current demand is zero.
+Unlike `CurrentValueSubject`, `PassthroughSubject` doesn't have initial value or buffer of most recently published element. `PassthroughSubject` drops values if there are no subscribers, or its current demand is zero.
 
 ```swift
 let aPublisher = PassthroughSubject<Int, SomeError>()
