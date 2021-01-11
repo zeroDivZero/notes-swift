@@ -1,6 +1,6 @@
 # PROPERTY WRAPPER
 
-Separation of property definition and management. E.g., properties with thread-safety checks or have their underlying data stored in database: need to write management code on every property. With property wrapper, write that code once, apply to multiple properties.
+Separation of property definition and management. E.g., properties with thread-safety checks or have their underlying data stored in database: need to write management code on every property. With property wrapper, write code once, apply to multiple properties.
 
 Define wrapper as struct, enum, or class with `wrappedValue` property. E.g., `TwelveOrLess` ensures value it wraps always contains number less than or equal to 12:
 
@@ -33,7 +33,7 @@ rectangle.height = 24
 print(rectangle.height) // "12"
 ```
 
-When applying property wrapper, compiler synthesizes code that provides wrapper storage and property access through wrapper (wrapper is responsible for property storage). Essentially, without special attribute syntax:
+When applying property wrapper, compiler synthesizes code that provides wrapper storage and property access through wrapper (wrapper responsible for property storage). Essentially, without special attribute syntax:
 
 ```swift
 struct SmallRectangle {
@@ -114,7 +114,7 @@ print(narrowRectangle.height, narrowRectangle.width) // "5 4"
 
 ## Projected Value
 
-Expose additional functionality by defining projected value. E.g., wrapper around database access can expose `flushDatabaseConnection()` on its projected value. Projected value name is same as wrapped value, except it begins with dollar sign (`$`). Written code can’t define properties starting with `$`, so projected value never interferes with defined properties.
+Expose additional functionality by defining projected value. E.g., wrapper around database access can expose `flushDatabaseConnection()` on its projected value. Projected value name is same as wrapped value, except it begins with dollar sign (`$`). Written code can't define properties starting with `$`, so projected value never interferes with defined properties.
 
 Code below adds `projectedValue` to keep track of whether wrapper adjusted new value for property before storing:
 

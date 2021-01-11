@@ -29,7 +29,7 @@ precedencegroup ForwardApplication {
 infix operator |>: ForwardApplication
 func |> <A, B>(a: A, f: (A) -> B) -> B { f(a) }
 
-2 |> incr |> square //9
+2 |> incr |> square // 9
 ```
 
 Minor downside: Loses autocomplete.
