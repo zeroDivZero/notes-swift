@@ -12,4 +12,9 @@ let subscriber = aPublisher
           receiveValue: {
             print("High value: \($0)")
           })
+
+aPublisher = send(10)
+aPublisher = send(25)
+aPublisher = send(32)
+aPublisher = send(completion: Subscribers.Completion<SomeError>.failure(.terminated))
 ```
