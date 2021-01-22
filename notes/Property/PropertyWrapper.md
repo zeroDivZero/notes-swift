@@ -1,6 +1,6 @@
 # PROPERTY WRAPPER
 
-Separation of property definition and management. E.g., properties with thread-safety checks or have their underlying data stored in database: need to write management code on every property. With property wrapper, write code once, apply to multiple properties.
+Separates property definition and management. E.g., properties with thread-safety checks or have their underlying data stored in database: need to write management code on every property. With property wrapper, write code once, apply to multiple properties.
 
 Define wrapper as struct, enum, or class with `wrappedValue` property. E.g., `TwelveOrLess` ensures value it wraps always contains number less than or equal to 12:
 
@@ -9,7 +9,7 @@ Define wrapper as struct, enum, or class with `wrappedValue` property. E.g., `Tw
 struct TwelveOrLess {
     private var number = 0
     var wrappedValue: Int {
-        get { return number }
+        get { number }
         set { number = min(newValue, 12) }
     }
 }
@@ -63,7 +63,7 @@ struct SmallNumber {
     private var number: Int
 
     var wrappedValue: Int {
-        get { return number }
+        get { number }
         set { number = min(newValue, maximum) }
     }
 
