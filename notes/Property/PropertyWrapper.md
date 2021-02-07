@@ -1,6 +1,6 @@
 # PROPERTY WRAPPER
 
-Separates property definition and management. E.g., properties with thread-safety checks or have their underlying data stored in database: need to write management code on every property. With property wrapper, write code once, apply to multiple properties.
+Separates property definition and management. E.g., properties with thread-safety checks or have underlying data stored in database need management code; with property wrapper only write code once.
 
 Define wrapper as struct, enum, or class with `wrappedValue` property. E.g., `TwelveOrLess` ensures value it wraps always contains number less than or equal to 12:
 
@@ -33,7 +33,7 @@ rectangle.height = 24
 print(rectangle.height) // "12"
 ```
 
-When applying property wrapper, compiler synthesizes code that provides wrapper storage and property access through wrapper (wrapper responsible for property storage). Essentially, without special attribute syntax:
+When applying, compiler synthesizes code that provides wrapper storage and property access through wrapper (wrapper responsible for property storage). Essentially, without special attribute syntax:
 
 ```swift
 struct SmallRectangle {
@@ -41,12 +41,12 @@ struct SmallRectangle {
     private var _width = TwelveOrLess()
 
     var height: Int {
-        get { return _height.wrappedValue }
+        get { _height.wrappedValue }
         set { _height.wrappedValue = newValue }
     }
 
     var width: Int {
-        get { return _width.wrappedValue }
+        get { _width.wrappedValue }
         set { _width.wrappedValue = newValue }
     }
 }
@@ -54,7 +54,7 @@ struct SmallRectangle {
 
 ## Initial Value
 
-Wrapper needs to add initializer:
+Wrapper needs initializer:
 
 ```swift
 @propertyWrapper
@@ -114,7 +114,7 @@ print(narrowRectangle.height, narrowRectangle.width) // "5 4"
 
 ## Projected Value
 
-Expose additional functionality by defining projected value. E.g., wrapper around database access can expose `flushDatabaseConnection()` on its projected value. Projected value name is same as wrapped value, except it begins with dollar sign (`$`). Written code can't define properties starting with `$`, so projected value never interferes with defined properties.
+Exposes additional functionality. E.g., wrapper around database access can expose `flushDatabaseConnection()`. Projected value name is dollar sign (`$`) plus wrapped value name. Written code can't start property name with `$`, so no conflict.
 
 Code below adds `projectedValue` to keep track of whether wrapper adjusted new value for property before storing:
 
@@ -124,7 +124,7 @@ struct SmallNumber {
     private var number = 0
     var projectedValue = false
     var wrappedValue: Int {
-        get { return number }
+        get { number }
         set {
             if newValue > 12 {
                 number = 12
