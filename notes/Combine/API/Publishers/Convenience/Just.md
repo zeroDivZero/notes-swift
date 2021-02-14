@@ -1,11 +1,17 @@
 # `struct Just`
 
-Publisher that emits output to each subscriber only once, and then finishes.
+Publisher that emits output once, then finishes.
 
 ```swift
 struct Just<Output>
 ```
 
-Can use `Just` to start chain of publishers. Also useful when replacing value with `Catch`.
+```swift
+Just(24)
+    .map { $0 < 21 ? "young" : "adult" }
+    .sink { print($0) }
+```
 
-In contrast with `Result.Publisher`, `Just` can't fail. Unlike `Optional.Publisher`, `Just` always produces value.
+Use `Just` to start chain of publishers. Also useful when replacing value with `Catch`.
+
+`Just` can't fail, unlike `Result.Publisher`, and it always produces value, unlike `Optional.Publisher`.
