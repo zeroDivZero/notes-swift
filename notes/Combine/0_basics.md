@@ -1,123 +1,159 @@
 # COMBINE BASICS
 
-## Functional Reactive Programming (FRP)
+FRP framework modeling async events and operations as *values over time*.
 
-Data flows from one place to other automatically through subscriptions. Particularly useful when data changes over time.
+## Publisher
 
-E.g., push slider value to stream, or use publisher to send value to subscribers, such as label showing slider value.
+Observable type that emits sequence of values (when events occur) over time. Active indefinitely or eventually completes (successfully or fails with error).
 
-FP applies to lists of elements, FRP applies to streams of elements. FP functions like `map`, `filter`, and `reduce` have analogues applicable to streams. In addition, FRP includes functions to split and merge streams. Like FP, can create custom operations to transform data streams.
-
-In addition to driving UI updates, also useful in asynchronous programming. E.g., when making network request, get result back eventually. Instead of executing completion closure, request method would return publisher, which publishes result when request done. If result needs to be transformed, or need to chain with another request, easier to read code than nested tree of completion closures.
-
-Combine extends FRP by embedding concept of *back-pressure*: subscriber controls how much info it gets at once to process. Leads to efficient operation, volume of processed stream data is controllable and cancellable.
-
-## Publisher and Subscriber
-
-Publisher object sends values to subscribers over time. Could be single, multiple, or no values. Can only emit single completion or error event. Publisher flow commonly represented by _marble diagram_:
-
-![publisher flow marble diagram](../../assets/Combine/publisher.png)
-
-Each arrow is publisher. Marble is value emitted. Top arrow has line at end representing completion event. Bottom arrow has cross representing error event. After either event, no more value.
-
-### Code Example
-
-Can model value stream with array.
+Some core libs support Combine. E.g., `URLSession` supplies publisher to wrap data task:
 
 ```swift
-[1, 2, 3]
-    .publisher
-    .sink(receiveCompletion: { completion in
+let url = URL(string: "https://api.github.com/repos/johnsundell/publish")!
+let publisher = URLSession.shared.dataTaskPublisher(for: url)
+```
+
+## Subscriber
+
+Publisher, unless subscribed, does not emit value. Attach subscriber with methods like `sink()` - specify closures to be invoked when new value received or publisher completed:
+
+```swift
+let cancellable = publisher.sink(
+    receiveCompletion: { completion in
+        // called once, when publisher completed
         switch completion {
         case .failure(let error):
-            print("Something went wrong: \(error)")
+            print(error)
         case .finished:
-            print("Received Completion")
+            print("success")
         }
-    }, receiveValue: { value in
-        print("Received value \(value)")
-    })
-// Received value 1
-// Received value 2
-// Received value 3
-// Received Completion
+    },
+    receiveValue: { value in
+        // called when new value emitted, can be called multiple times
+        print(value)
+    }
+)
 ```
 
-Combine adds `publisher` property to `Array`. Turns array of values into publisher to publish values to subscribers.
+`sink()` returns `AnyCancellable`. When attaching subscriber, publisher returns `Cancellable` object that acts as token for subscription. Retain this for as long as subscription should remain active. When deallocated, subscription is automatically canceled (cancel manually by calling `cancel()` on token).
 
-Created publisher type is `Publishers.Sequence<[Int], Never>`. `Publishers` is enum used as namespace for all publishers. Each publisher conforms to `Publisher`, but rarely created directly.
+## Operation Chain
 
-Generic types `[Int]` and `Never` mean publisher uses `[Int]` to publish values, and its failure type is `Never`, so it always completes successfully, never reaches `.failure` case in example `switch`.
-
-Every publisher has `Output` and `Failure` associated types. `Output` is value type publisher pushes to subscribers. In example sequence publisher, `Output` is `Int`, `Failure` is `Never`. Fallible publisher often uses object conforming to `Error` as `Failure` type, but can specify another.
-
-Subscribe to publisher with `sink(receiveCompletion:receiveValue:)`. Also special version if publisher cannot fail, only need to supply `receiveValue` closure. **Publisher only publishes values when there is subscriber**. `sink()` creates subscriber immediately and enables publisher to begin streaming values.
-
-`receiveValue` closure called each time new value published, value received as its single arg.
-
-## Tracking Subscriptions
-
-Typically need to retain return type of `sink()`, or subscriber discarded when out of scope. Return type is `AnyCancellable`: type-erased wrapper around `Cancellable`. Can explicitly cancel subscription (`subscription.cancel()`), or automatically canceled when deallocated.
+Can write closure-based completion handler to decode data in `sink()`, but power of Combine is in composable operation chains:
 
 ```swift
-import Combine
-
-var subscription: AnyCancellable?
-
-func subscribe() {
-    let notification = UIApplication.keyboardDidShowNotification
-    let publisher = NotificationCenter.default.publisher(for: notification) // type: NotificationCenter.Publisher
-    subscription = publisher.sink(receiveCompletion: { _ in // arg type: Subscribers.Completion<Never>, meaning Failure == Never
-        print("Completion")
-    }, receiveValue: { notification in // arg type: Notification, meaning Output == Notification
-        print("Received notification: \(notification)")
-    })
+struct Repository: Codable {
+    var name: String
+    var url: URL
 }
 
-subscribe()
-NotificationCenter.default.post(Notification(name: UIApplication.keyboardDidShowNotification))
-```
-
-## Transforming Publisher with Operator
-
-Often don't use values emitted from publisher directly. Publishers can transform stream values with **operators** like `map` and `flatMap` (creates new publisher).
-
-![map publisher flow marble diagram](../../assets/Combine/publisher_map.png)
-
-New publisher type is `Publishers.Map<Upstream, Output>`. `Upstream` must be another publisher.
-
-```swift
-// transforms keyboard notification to keyboard height (CGFloat)
-let publisher = NotificationCenter.default
-    .publisher(for: UIResponder.keyboardDidShowNotification)
-    .map { (notification) -> CGFloat in
-        guard let endFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
-            return 0.0
+let cancellable = publisher
+    .map(\.data) // DataTaskPublisher publishes (data, response), only interested in `data`
+    .decode(type: Repository.self, decoder: JSONDecoder())
+    .sink(
+        receiveCompletion: { completion in
+            switch completion {
+            case .failure(let error):
+                print("error:", error.localizedDescription)
+            case .finished:
+                print("success")
+            }
+        },
+        receiveValue: { repo in
+            print(repo)
         }
-
-        return endFrame.cgRectValue.height
-} // type: Publishers.Map<NotificationCenter.Publisher, CGFloat>
+    )
 ```
 
-### `collect()`
+Aim to keep closure simple, prefer reactive chain to transform value.
 
-Takes values from publisher, collects into array and sends to subscribers when threshold met.
+## Update UI
 
-![collect publisher flow marble diagram](../../assets/Combine/publisher_collect.png)
+Combine handles mostly async values. E.g., `URLSession` works in background. If need to bind data to UI, emit values only to main thread with `receive()` operation:
 
 ```swift
-[1, 2, 3]
-    .publisher
-    .collect(2) // Publishers.CollectByCount<Publishers.Sequence<[Int], Never>>
-    .sink { value in
-        print("Received value \(value)")
-}
-// Received value [1, 2]
-// Received value [3]
-```
+let nameLabel = UILabel()
+let errorLabel = UILabel()
 
-If specified no threshold, new publisher type is `Result<Success, Failure>.Publisher` (`Result<[Output], Never>.Publisher` in this example), returns all values or error. Warning: uses unbounded memory.
+let repoPublisher = publisher
+    .map(\.data)
+    .decode(type: Repository.self, decoder: JSONDecoder())
+    .receive(on: DispatchQueue.main)
+
+let cancellable = repoPublisher.sink(
+    receiveCompletion: { completion in
+        switch completion {
+        case .failure(let error):
+            errorLabel.text = error.localizedDescription
+        case .finished:
+            break
+        }
+    },
+    receiveValue: { repo in
+        nameLabel.text = repo.name
+    }
+)
+```
 
 ## Other Foundation Types
 
-There are other Foundation types that expose their functionality through publishers, such as `Timer` and `URLSession`.
+There are other Foundation types that expose their functionality through publishers, such as `Timer` and `NotificationCenter`.
+
+## Custom Publisher
+
+```swift
+class Counter {
+    // `PassthroughSubject` is both publisher and subject — object that new values can be sent
+    let publisher = PassthroughSubject<Int, Never>()
+
+    private(set) var value = 0 {
+        // when property set, new value sent to subject/publisher:
+        didSet { publisher.send(value) }
+    }
+
+    func increment() {
+        value += 1
+    }
+}
+
+let counter = Counter()
+
+let cancellable = counter.publisher
+    .filter { $0 > 2 }
+    .sink { print($0) }
+
+counter.increment()
+counter.increment()
+counter.increment()
+counter.increment()
+// 3
+// 4
+```
+
+However, value can be sent from outside `Counter`, multiple sources of truth:
+
+```swift
+counter.publisher.send(17)
+```
+
+Need to hide subject and expose only publisher:
+
+```swift
+class Counter {
+    var publisher: AnyPublisher<Int, Never> {
+        // "erase" subject's type info, exposing read-only publisher
+        subject.eraseToAnyPublisher()
+    }
+
+    // private, can only send new values within class
+    private let subject = PassthroughSubject<Int, Never>()
+
+    private(set) var value = 0 {
+        didSet { subject.send(value) }
+    }
+
+    func increment() {
+        value += 1
+    }
+}
+```
