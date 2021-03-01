@@ -1,8 +1,10 @@
-# `struct Published<Value>`
+# `@Published`
 
-`@propertyWrapper struct Published<Value>`
+```swift
+@propertyWrapper struct Published<Value>
+```
 
-Publishing property with `@Published` creates publisher of this type. Access publisher with `$` operator:
+Add this attribute to create publisher of property's type, publishing value when property set with new value. Access publisher by prepending `$` to property name:
 
 ```swift
 class Weather {
@@ -15,13 +17,12 @@ class Weather {
 let weather = Weather(temperature: 20)
 cancellable = weather.$temperature
     .sink() {
-        print("Temperature now: \($0)")
-}
+        print("temperature now: \($0)")
+    }
 weather.temperature = 25
 
-// Prints:
-// Temperature now: 20.0
-// Temperature now: 25.0
+// temperature now: 20.0
+// temperature now: 25.0
 ```
 
 When property changes, publishing occurs in property's `willSet` block - subscribers receive new value before set on poperty.

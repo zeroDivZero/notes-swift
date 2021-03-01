@@ -65,7 +65,7 @@ let cancellable = publisher
     )
 ```
 
-Aim to keep closure simple, prefer reactive chain to transform value.
+Aim to keep closure simple, prefer reactive chain that transforms value.
 
 ## Update UI
 
@@ -99,44 +99,36 @@ let cancellable = repoPublisher.sink(
 
 There are other Foundation types that expose their functionality through publishers, such as `Timer` and `NotificationCenter`.
 
-## Custom Publisher
+## `@Published`
+
+Simple way to turn property into publisher. Publisher name is "$ + *property name*":
 
 ```swift
 class Counter {
-    // `PassthroughSubject` is both publisher and subject — object that new values can be sent
-    let publisher = PassthroughSubject<Int, Never>()
-
-    private(set) var value = 0 {
-        // when property set, new value sent to subject/publisher:
-        didSet { publisher.send(value) }
-    }
-
-    func increment() {
-        value += 1
-    }
+    // emits when new value assigned
+    @Published private(set) var value = 0
+    func increment() { value += 1 }
 }
 
 let counter = Counter()
 
-let cancellable = counter.publisher
+let cancellable = counter.$value
     .filter { $0 > 2 }
-    .sink { print($0) }
-
+    .sink {
+        print("value: \(counter.value)")
+        print("received: \($0)")
+    }
 counter.increment()
 counter.increment()
-counter.increment()
-counter.increment()
-// 3
-// 4
+counter.increment()  // value: 2; received: 3
+counter.increment()  // value: 3; received: 4
 ```
 
-However, value can be sent from outside `Counter`, multiple sources of truth:
+Similar to above implementation with subject with one main difference: Publishing occurs in property's `willSet` block -- so `counter.value` is not set yet when subscriber receives new value.
 
-```swift
-counter.publisher.send(17)
-```
+## `PassthroughSubject` / `CurrentValueSubject`
 
-Need to hide subject and expose only publisher:
+If `@Published` not applicable, use `Subject` - publisher that can emit by calling its `send()`.
 
 ```swift
 class Counter {
@@ -157,3 +149,9 @@ class Counter {
     }
 }
 ```
+
+`CurrentValueSubject`, unlike `PassthroughSubject`, holds most recent published value in property `value` (can also be set directly instead of calling `send()`).
+
+## Custom Publisher
+
+If cannot use built-in publisher or one of previous techniques (often because no control over object's code), can create [own publisher](./8_custom_publisher.md).

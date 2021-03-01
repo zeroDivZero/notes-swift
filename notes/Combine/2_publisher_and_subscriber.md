@@ -23,3 +23,17 @@ Reference type.
 `assign(to:on:)`: Immediately assigns every element it receives to property of object using keypath.
 
 Both request unlimited number of elements from publisher.
+
+### Cancel
+
+Subscribers all conform to `Cancellable`, so they all have `cancel()` that can terminate stream.
+
+When cancelled, pipeline not expected to be restarted. Eexpected to create new pipeline.
+
+### `Demand`
+
+Subscriber requests data from publisher with specific `Demand`. Demand request is propagated up pipeline. Each operator in turn accepts request and requests info from upstream publisher.
+
+## Lifecycle
+
+![publisher subscriber lifecycle](../../assets/Combine/publisher_subscriber_lifecycle.png)
