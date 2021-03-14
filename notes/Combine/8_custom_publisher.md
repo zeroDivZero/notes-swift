@@ -1,8 +1,8 @@
 # CUSTOM PUBLISHER
 
-Sometimes need to create publisher ground up; e.g., publisher is tied to object have complete control over.
+Sometimes need to create publisher ground up; e.g., publisher tied to object with no complete control.
 
-Instead of using traditional target/action pattern, create publisher that works for any `UIControl` to publish events:
+Instead of using traditional target/action pattern, create publisher that works for any `UIControl`:
 
 ```swift
 extension UIControl {
