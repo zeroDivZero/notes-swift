@@ -35,7 +35,7 @@ let cancellable = publisher.sink(
 )
 ```
 
-`sink()` returns `AnyCancellable`. When attaching subscriber, publisher returns `Cancellable` object that acts as token for subscription. Retain this for as long as subscription should remain active. When deallocated, subscription is automatically canceled (cancel manually by calling `cancel()` on token).
+`sink()` returns `AnyCancellable`. When attaching subscriber, publisher returns `Cancellable` object that acts as token for subscription. Retain this for as long as subscription should remain active. When deallocated, subscription automatically canceled (cancel manually by calling `cancel()` on token).
 
 ## Operation Chain
 
@@ -124,7 +124,7 @@ counter.increment()  // value: 2; received: 3
 counter.increment()  // value: 3; received: 4
 ```
 
-Similar to above implementation with subject with one main difference: Publishing occurs in property's `willSet` block -- so `counter.value` is not set yet when subscriber receives new value.
+Publishing occurs in property's `willSet`, `counter.value` not set yet when subscriber receives new value.
 
 ## `PassthroughSubject` / `CurrentValueSubject`
 

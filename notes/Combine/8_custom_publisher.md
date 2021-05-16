@@ -113,3 +113,22 @@ nameTextField.textPublisher.combineLatest(
     .map(ShippingInfo.init)
     .assign(to: &$shippingInfo)
 ```
+
+## Respond to Demand
+
+`UIControl.EventPublisher` essentially wrapper around another type of event, can ignore `request()`. Not all custom publishers can. E.g., `Feed` publisher continuously emits new values as long as its provider closure doesn't return `nil`:
+
+```swift
+struct Feed<Output>: Publisher {
+    typealias Failure = Never
+
+    var provider: () -> Output?
+
+    func receive<S: Subscriber>(
+        subscriber: S
+    ) where S.Input == Output, S.Failure == Never {
+        let subscription = Subscription(feed: self, target: subscriber)
+        subscriber.receive(subscription: subscription)
+    }
+}
+```
