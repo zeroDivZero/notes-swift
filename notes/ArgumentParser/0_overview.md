@@ -114,3 +114,10 @@ extension Random {
 Thursday
 Monday
 ```
+
+To provide short or alternative name for option:
+
+```swift
+@Option(name: [.short, .customLong(""), .long], help: "...")
+var veryLongOptionName: String
+```
