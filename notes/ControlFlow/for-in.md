@@ -1,6 +1,6 @@
 # `for in`
 
-To iterate over sequence.
+To iterate over sequence. Use `continue` to skip rest of body to next loop, or `break` to early exit.
 
 ## Iterate through Array
 
