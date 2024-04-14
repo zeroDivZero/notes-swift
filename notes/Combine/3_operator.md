@@ -1,6 +1,6 @@
 # OPERATOR
 
-Describes behavior for chaging values. Acts like subscriber and publisher. Chainable, for processing, reacting to, and transforming data.
+Describes behavior for changing values. Acts like subscriber and publisher. Chainable, for processing, reacting to, and transforming data.
 
 Adopts both `Publisher` and `Subscriber`. Subscribes to a `Publisher` (*upstream*). Sends result to a `Subscriber` (*downstream*).
 
